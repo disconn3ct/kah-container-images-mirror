@@ -24,11 +24,8 @@ RUN \
 	  postgresql-client sudo php-xdebug \
     nginx \
     ${EXTRA_INSTALL_ARG} \
+  && chown root:kah /app \
   && git clone https://git.tt-rss.org/fox/tt-rss.git . \
-  && if [ -n "$VERSION" ]; then \
-    NUMBER_COMMITS_TO_REVERT=$(( $(git rev-list --count --first-parent HEAD) - $(echo $VERSION|cut -d "." -f3) )); \
-    git checkout "master~$NUMBER_COMMITS_TO_REVERT"; \
-  fi \
   && git clone https://git.tt-rss.org/fox/ttrss-nginx-xaccel.git plugins.local/nginx_xaccel \
   && git clone -b $VERSION_LDAP_AUTH https://github.com/k8s-at-home/TTRSS-Auth-LDAP.git plugins.local/auth_ldap \
   && git clone https://github.com/HenryQW/mercury_fulltext.git plugins.local/mercury_fulltext \
