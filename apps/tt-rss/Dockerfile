@@ -1,4 +1,4 @@
-FROM ghcr.io/k8s-at-home/ubuntu-focal:rolling@sha256:c001f386f4860b3353dcb40dceafa4274bd7b77c8aa2def745fec26d58c8a0fd
+FROM ghcr.io/onedr0p/ubuntu:focal-20220826
 
 ARG VERSION
 ARG VERSION_LDAP_AUTH=3.0.0
@@ -10,10 +10,17 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /app
 
+# ln: https://github.com/docker/buildx/issues/495#issuecomment-995503425
 # hadolint ignore=DL3008,DL3015,SC2086
 RUN \
   export EXTRA_INSTALL_ARG="git" \
   && apt-get -qq update \
+  && \
+  ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split \
+  && ln -s /usr/bin/dpkg-deb /usr/sbin/dpkg-deb \
+  && ln -s /bin/rm /usr/sbin/rm \
+  && ln -s /bin/tar /usr/sbin/tar \
+  && ln -s /bin/grep /usr/sbin/grep \
   && \
   apt-get -qq install -y \
     php-fpm \
