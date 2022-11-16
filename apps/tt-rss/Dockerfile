@@ -32,6 +32,7 @@ RUN \
 	  postgresql-client sudo php-xdebug \
     nginx \
     ${EXTRA_INSTALL_ARG} \
+  && apt-get -qqy upgrade \
   && git config --global --add safe.directory '*' \
   && cp /root/.gitconfig /var/www \
   && chown www-data: /var/www/.gitconfig \
@@ -79,7 +80,6 @@ RUN \
 
 #USER kah
 #nginx and php use www-data as non-privileged user
-#this container does not need to write persistent files - it only persists to DB
 
 WORKDIR /config
 
