@@ -47,9 +47,8 @@ RUN \
   git clone --depth 1 --single-branch https://github.com/levito/tt-rss-feedly-theme.git /tmp/feedly && \
   mv -v /tmp/feedly/feedly* themes/ && \
   rm -rf /tmp/feedly && \
-  git clone --depth 1 --single-branch https://github.com/disconn3ct/ttrss-googlereader-mobile.git g2 
-
-RUN  chmod -R a+rX /app && \
+  git clone --depth 1 --single-branch https://github.com/disconn3ct/ttrss-googlereader-mobile.git g2 && \
+  chmod -R a+rX /app && \
   chown -R kah:kah cache feed-icons lock /var/log/php81 /var/log/nginx /var/lib/php81 /var/lib/nginx /run/nginx
 
 ENV PHP_WORKER_MAX_CHILDREN=5
