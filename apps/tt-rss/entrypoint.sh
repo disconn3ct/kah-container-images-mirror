@@ -7,15 +7,18 @@ source "/shim/vpn.sh"
 set -euo pipefail
 
 export PGPASSWORD=${TTRSS_DB_PASS:-password}
+T_DB_HOST=${TTRSS_DB_HOST:-t-db-1}
+T_DB_USER=${TTRSS_DB_USER:-postgres}
+T_DB_NAME=${TTRSS_DB_NAME:-postgres}
 
-while ! pg_isready -h ${TTRSS_DB_HOST:-t-db-1} -U ${TTRSS_DB_USER:-postgres}; do
-	echo "waiting until '${TTRSS_DB_HOST:-t-db-1}' is ready..."
+while ! pg_isready -h ${T_DB_HOST} -U ${T_DB_USER}; do
+	echo "waiting until '${T_DB_HOST}' is ready..."
 	sleep 3
 done
 
 
 # Create schema if not already set
-PSQL="psql -q -h ${TTRSS_DB_HOST:-t-db-1} -U ${TTRSS_DB_USER:-postgres} ${TTRSS_DB_NAME:-postgres}"
+PSQL="psql -q -h ${T_DB_HOST} -U ${T_DB_USER} ${T_DB_NAME}"
 $PSQL -c "create extension if not exists pg_trgm"
 
 if ! $PSQL -c 'select * from ttrss_version'; then
@@ -41,7 +44,6 @@ fi
 php /app/update.php --update-schema=force-yes
 
 touch /tmp/.app_is_ready
-
 
 #Start web server with php support
 /usr/sbin/php-fpm81
