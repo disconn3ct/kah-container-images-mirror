@@ -21,6 +21,10 @@ RUN \
     -e 's/;\(clear_env\) = .*/\1 = no/i' \
     -e 's/^\(user\|group\) = .*/\1 = kah/i' \
       /etc/php81/php-fpm.d/www.conf && \
+  sed -i \
+    -e 's#\(access_log\) .*#\1 /dev/stdout main;#i' \
+    -e 's#\(error_log\) .*#\1 /dev/stderr warn;#i' \
+      /etc/nginx/nginx.conf && \
   git config --global --add safe.directory '*' && \
   cp /root/.gitconfig /home/kah && \
   chown kah: /home/kah/.gitconfig && \
