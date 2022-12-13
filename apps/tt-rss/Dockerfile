@@ -32,7 +32,7 @@ RUN \
   git clone --depth 1 --single-branch  https://git.olved.dev/Devolved/tt-rss.git . && \
   git --no-pager log --pretty="version-%ct-%h" -n1 HEAD > version_static.txt && \
   git clone --depth 1 --single-branch https://git.olved.dev/Devolved/ttrss-nginx-xaccel.git plugins/nginx_xaccel && \
-  git clone --depth 1 --single-branch https://dev.tt-rss.org/tt-rss/ttrss-af-readability.git plugins/af-readability && \
+  git clone --depth 1 --single-branch https://dev.tt-rss.org/tt-rss/ttrss-af-readability.git plugins/af_readability && \
   git clone --depth 1 --single-branch https://github.com/HenryQW/mercury_fulltext.git plugins/mercury_fulltext && \
   git clone --depth 1 --single-branch https://git.tt-rss.org/fox/ttrss-af-unburn.git plugins/af_unburn && \
   git clone --depth 1 --single-branch https://git.tt-rss.org/fox/ttrss-af-fsckportal.git plugins/af_fsckportal && \
