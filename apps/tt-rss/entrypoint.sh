@@ -4,16 +4,21 @@
 source "/shim/umask.sh"
 source "/shim/vpn.sh"
 
-export PGPASSWORD=$TTRSS_DB_PASS
+set -euo pipefail
 
-while ! pg_isready -h $TTRSS_DB_HOST -U $TTRSS_DB_USER; do
-	echo waiting until $TTRSS_DB_HOST is ready...
+export PGPASSWORD=${TTRSS_DB_PASS:-password}
+T_DB_HOST=${TTRSS_DB_HOST:-t-db-1}
+T_DB_USER=${TTRSS_DB_USER:-postgres}
+T_DB_NAME=${TTRSS_DB_NAME:-postgres}
+
+while ! pg_isready -h ${T_DB_HOST} -U ${T_DB_USER}; do
+	echo "waiting until '${T_DB_HOST}' is ready..."
 	sleep 3
 done
 
 
 # Create schema if not already set
-PSQL="psql -q -h $TTRSS_DB_HOST -U $TTRSS_DB_USER $TTRSS_DB_NAME"
+PSQL="psql -q -h ${T_DB_HOST} -U ${T_DB_USER} ${T_DB_NAME}"
 $PSQL -c "create extension if not exists pg_trgm"
 
 if ! $PSQL -c 'select * from ttrss_version'; then
@@ -21,8 +26,8 @@ if ! $PSQL -c 'select * from ttrss_version'; then
 fi
 
 # PHP in debug mode
-if [ ! -z "${TTRSS_XDEBUG_ENABLED}" ]; then
-	if [ -z "${TTRSS_XDEBUG_HOST}" ]; then
+if [ ! -z "${TTRSS_XDEBUG_ENABLED:-}" ]; then
+	if [ -z "${TTRSS_XDEBUG_HOST:-}" ]; then
 		export TTRSS_XDEBUG_HOST=$(ip ro sh 0/0 | cut -d " " -f 3)
 	fi
 	echo enabling xdebug with the following parameters:
@@ -36,13 +41,12 @@ xdebug.client_host = ${TTRSS_XDEBUG_HOST}
 EOF
 fi
 
-sudo -E -u www-data php /app/update.php --update-schema=force-yes
+php /app/update.php --update-schema=force-yes
 
-touch $DST_DIR/.app_is_ready
-
+touch /tmp/.app_is_ready
 
 #Start web server with php support
-/usr/sbin/php-fpm7.4
-/usr/sbin/nginx ${EXTRA_ARGS}
+/usr/sbin/php-fpm81
+/usr/sbin/nginx -c /etc/nginx/nginx.conf -p /var/lib/nginx ${EXTRA_ARGS:-}
 
-exec sudo -E -u www-data php /app/update_daemon2.php
+exec php /app/update_daemon2.php
